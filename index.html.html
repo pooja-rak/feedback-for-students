@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>A note for you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #FBF6EC;
+    --paper-edge: #F1E8D6;
+    --ink: #1E3A2E;
+    --ink-soft: #3F5A4C;
+    --gold: #C89B3E;
+    --rose: #B4585F;
+    --charcoal: #2B2B28;
+    --line: rgba(43,43,40,0.14);
+    --shadow: rgba(30,58,46,0.16);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+
+  body {
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(200,155,62,0.08), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(180,88,95,0.07), transparent 45%);
+    color: var(--charcoal);
+    font-family: 'Public Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+  }
+
+  .stage {
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 3px;
+    border: 1px solid var(--line);
+    box-shadow: 0 1px 2px var(--shadow), 0 18px 40px -20px var(--shadow);
+    padding: 44px 38px 38px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg, var(--ink) 0%, var(--ink) 60%, var(--gold) 60%, var(--gold) 80%, var(--rose) 80%);
+  }
+
+  .kicker {
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 0.01em;
+    margin: 0 0 6px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 34px;
+    line-height: 1.15;
+    color: var(--ink);
+    margin: 0 0 14px;
+  }
+
+  .lede {
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: var(--charcoal);
+    opacity: 0.85;
+    margin: 0 0 30px;
+    max-width: 40ch;
+  }
+
+  label {
+    display: block;
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+
+  .field {
+    display: flex;
+    gap: 10px;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    font-family: 'Public Sans', sans-serif;
+    font-size: 16px;
+    padding: 13px 14px;
+    border-radius: 3px;
+    border: 1.5px solid var(--line);
+    background: var(--paper);
+    color: var(--charcoal);
+    outline: none;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--ink);
+    background: #fff;
+  }
+
+  input[type="text"]::placeholder {
+    color: #a09a8d;
+  }
+
+  button {
+    font-family: 'Public Sans', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: #fff;
+    background: var(--ink);
+    border: none;
+    border-radius: 3px;
+    padding: 0 22px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  button:hover { background: #163023; }
+  button:active { transform: scale(0.98); }
+
+  .error {
+    color: var(--rose);
+    font-size: 13.5px;
+    margin: 10px 0 0;
+    min-height: 18px;
+  }
+
+  /* ---- Note view ---- */
+
+  .note {
+    display: none;
+  }
+
+  .note.visible {
+    display: block;
+    animation: rise 0.5s ease both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form.hidden { display: none; }
+
+  .stamp {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 62px;
+    height: 62px;
+    border: 1.5px solid var(--rose);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--rose);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.2;
+    transform: rotate(8deg);
+    opacity: 0.85;
+  }
+
+  .note-greeting {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin: 0 0 4px;
+  }
+
+  .note-name {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 32px;
+    color: var(--ink);
+    margin: 0 0 22px;
+    word-break: break-word;
+    max-width: 82%;
+  }
+
+  .note-body {
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--charcoal);
+    margin: 0 0 28px;
+    max-width: 40ch;
+  }
+
+  .note-sign {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    border-top: 1px dashed var(--line);
+    padding-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .again {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    font-family: 'Public Sans', sans-serif;
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 3px;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .again:hover { color: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .note.visible { animation: none; }
+  }
+
+  @media (max-width: 420px) {
+    .card { padding: 34px 24px 28px; }
+    h1 { font-size: 28px; }
+    .note-name { font-size: 26px; }
+    .stamp { width: 52px; height: 52px; top: 22px; right: 22px; font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="card">
+
+    <div class="form" id="form">
+      <p class="kicker">For the class</p>
+      <h1>its a Lovely Feedback<br>For my devil's shorties</h1>
+      <p class="lede">Tell us your name, and we'll hand you back a few words you've earned by this internal assessment 2.</p>
+
+      <label for="studentName">Your name</label>
+      <div class="field">
+        <input type="text" id="studentName" placeholder="e.g. Priya Sharma" autocomplete="off" />
+        <button id="revealBtn" type="button">Show my note</button>
+      </div>
+      <p class="error" id="errorMsg"></p>
+    </div>
+
+    <div class="note" id="note">
+      <div class="stamp">OS<br>FeedBack</div>
+      <p class="note-greeting" id="noteGreeting">Heyyyyy</p>
+      <p class="note-name" id="noteName"></p>
+      <p class="note-body" id="noteBody"></p>
+      <div class="note-sign">
+        <span id="noteDate"></span>
+        <button class="again" id="againBtn" type="button">Write another</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ---- Edit this list ----
+  // Add one line per student: the key is their name (any case), the value
+  // is the exact message they should see. Match is case-insensitive and
+  // ignores extra spaces, so "priya sharma" and "Priya Sharma" both work.
+  const studentMessages = {
+    "priya sharma": "The way you asked questions today told us you were really listening, not just waiting for your turn to speak. Keep asking.",
+    "arjun mehta": "You stuck with a hard problem today instead of reaching for the easy way out. That kind of patience is rare, and it's yours.",
+    "fatima khan": "You helped a classmate before anyone asked you to. That's the kind of thing that doesn't show up on a report card, but it should.",
+    "ashta":"very worst but you have a potential and you are not using it properly! and mainly mind your language in class",
+    "anushiya":"i didn't except this from you girl you just nailed it",
+    "bhavani":"try to give your best in upcomming exam! i'm rooting for you!",
+    "canrani":"i'm impressed and nothing to say it for you girl! you always rock it like a rock star!",
+    "divyadharshini":"Girl you really did it! and make me feel do proud!!!!!",
+    "Jenit":"Try harder next time jenit! and i know you will",
+    "Kalaivani":"all the control is not a control and control one of the stress buster answer sheet i ever ready kalai! but i don't to read it this kinda answers in upcoming exams! Soo... you know what i mean!!!",
+    "lakshmi":"good improvement keep it up!",
+    "logasri":"why are you checking this you don't even write the internal assessment 2!",
+    "mahalakshmi":"why are you checking this you don't even write the internal assessment 2!",
+    "prema":"why are you checking this you don't even write the internal assessment 2!",
+    "nafiya":"Good Job girl! still i expect something more from you! and you got that power!",
+    "nisha":"Good work girl! still i want you to improve",
+    "nishanthini":"damn it girl you nailed it! don't settle for less and you already set a standards!",
+    "priyadharshini":"Good work girl!",
+    "ragavi":"why are you checking this you don't even write the internal assessment 2!",
+    "renuga":"disapponted bro! vera ethuvum sollarathuku illa!",
+    "sandhiya":"sandyyyyyy!!!! i'm really proud of you da!! you just make me impress! you nailed it girl! but still you have to improve a lot! i hope you get it!",
+    "shabana banu":"Hmmm okay! got a decent score but still it doen't match the standards i put it for you! lets check the improvement in next test!",
+    "sowmiya":"Girl is that really you!! i can't able to belive! but a you are keeping a promise bro! Keeping a PROMISE!!",
+    "srimathi":"Girl you done a great Job! still i want you to improve!"
+    // Add more students below, e.g.:
+    // "your student name": "Your message for them.",
+  };
+
+  // Shown only if a typed name isn't found in the list above.
+  const fallbackMessage = "We don't have a note saved for this name yet — check the spelling, or ask your teacher to add one.";
+
+  const nameInput = document.getElementById('studentName');
+  const revealBtn = document.getElementById('revealBtn');
+  const errorMsg = document.getElementById('errorMsg');
+  const form = document.getElementById('form');
+  const note = document.getElementById('note');
+  const noteName = document.getElementById('noteName');
+  const noteBody = document.getElementById('noteBody');
+  const noteDate = document.getElementById('noteDate');
+  const againBtn = document.getElementById('againBtn');
+
+  function showNote() {
+    const name = nameInput.value.trim();
+    if (!name) {
+      errorMsg.textContent = "Add your name so we know who this note is for.";
+      nameInput.focus();
+      return;
+    }
+    errorMsg.textContent = "";
+
+    const key = name.toLowerCase().replace(/\s+/g, ' ').trim();
+    const message = studentMessages[key] || fallbackMessage;
+    noteName.textContent = name;
+    noteBody.textContent = message;
+    noteDate.textContent = new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+
+    form.classList.add('hidden');
+    note.classList.add('visible');
+  }
+
+  function resetForm() {
+    note.classList.remove('visible');
+    form.classList.remove('hidden');
+    nameInput.value = "";
+    errorMsg.textContent = "";
+    nameInput.focus();
+  }
+
+  revealBtn.addEventListener('click', showNote);
+  nameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') showNote();
+  });
+  againBtn.addEventListener('click', resetForm);
+</script>
+
+</body>
+</html>
